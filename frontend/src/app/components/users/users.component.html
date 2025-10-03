@@ -1,0 +1,81 @@
+<div class="users-container">
+  <div class="header">
+    <h2>User Management</h2>
+    <button class="back-btn" (click)="goBack()">Back to Todos</button>
+  </div>
+
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <div class="loading" *ngIf="loading && users.length === 0">
+    Loading users...
+  </div>
+
+  <div class="users-table" *ngIf="!loading || users.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="role-badge" [class.admin]="user.role === 'admin'">
+              {{ user.role }}
+            </span>
+          </td>
+          <td>{{ user.created_at | date:'short' }}</td>
+          <td>
+            <button class="btn-edit" (click)="openRoleModal(user)" [disabled]="loading">
+              Change Role
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="selectedUser" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Change User Role</h3>
+      
+      <div class="user-info">
+        <p><strong>User:</strong> {{ selectedUser.name }}</p>
+        <p><strong>Email:</strong> {{ selectedUser.email }}</p>
+        <p><strong>Current Role:</strong> {{ selectedUser.role }}</p>
+      </div>
+
+      <div class="form-group">
+        <label for="role">New Role:</label>
+        <select id="role" [(ngModel)]="newRole" name="role">
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
+      <div class="error-message" *ngIf="error">
+        {{ error }}
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-save" (click)="updateRole()" [disabled]="loading || newRole === selectedUser.role">
+          {{ loading ? 'Updating...' : 'Update Role' }}
+        </button>
+        <button class="btn-cancel" (click)="closeModal()" [disabled]="loading">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

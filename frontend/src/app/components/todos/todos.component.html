@@ -1,0 +1,125 @@
+<div class="todos-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="user-info">
+      <h1>My Todos</h1>
+      <p *ngIf="currentUser">Welcome, {{ currentUser.name }} <span class="role-badge" *ngIf="isAdmin()">(Admin)</span></p>
+    </div>
+    <div class="header-actions">
+      <button class="users-btn" *ngIf="isAdmin()" (click)="goToUsers()">Users</button>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <!-- New Todo Form -->
+  <div class="new-todo-form">
+    <h2>Create New Todo</h2>
+    <form (ngSubmit)="createTodo()">
+      <div class="form-row">
+        <input 
+          type="text" 
+          [(ngModel)]="newTodo.title" 
+          name="title"
+          placeholder="Todo title (required)"
+          [disabled]="loading"
+          required
+        />
+        <input 
+          type="text" 
+          [(ngModel)]="newTodo.description" 
+          name="description"
+          placeholder="Description (optional)"
+          [disabled]="loading"
+        />
+        <button type="submit" [disabled]="loading || !newTodo.title.trim()">
+          Add Todo
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="loading" *ngIf="loading && todos.length === 0">
+    Loading todos...
+  </div>
+
+  <!-- Todos List -->
+  <div class="todos-list" *ngIf="!loading || todos.length > 0">
+    <h2>Todos ({{ todos.length }})</h2>
+    
+    <div class="empty-state" *ngIf="todos.length === 0">
+      <p>No todos yet. Create your first todo above!</p>
+    </div>
+
+    <div class="todo-item" *ngFor="let todo of todos" [class.completed]="todo.completed">
+      <!-- View Mode -->
+      <div class="todo-view" *ngIf="editingTodo?.id !== todo.id">
+        <div class="todo-checkbox">
+          <input 
+            type="checkbox" 
+            [checked]="todo.completed"
+            (change)="toggleComplete(todo)"
+            [disabled]="loading"
+          />
+        </div>
+        
+        <div class="todo-content">
+          <h3 [class.completed-text]="todo.completed">{{ todo.title }}</h3>
+          <p *ngIf="todo.description">{{ todo.description }}</p>
+          <small>Created: {{ todo.created_at | date:'short' }}</small>
+        </div>
+        
+        <div class="todo-actions">
+          <button class="edit-btn" (click)="startEdit(todo)" [disabled]="loading">
+            Edit
+          </button>
+          <button class="delete-btn" (click)="deleteTodo(todo)" [disabled]="loading">
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <!-- Edit Mode -->
+      <div class="todo-edit" *ngIf="editingTodo?.id === todo.id">
+        <form (ngSubmit)="saveEdit()">
+          <div class="edit-form">
+            <input 
+              type="text" 
+              [(ngModel)]="editForm.title" 
+              name="editTitle"
+              placeholder="Title"
+              required
+            />
+            <input 
+              type="text" 
+              [(ngModel)]="editForm.description" 
+              name="editDescription"
+              placeholder="Description"
+            />
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="editForm.completed"
+                name="editCompleted"
+              />
+              Completed
+            </label>
+            <div class="edit-actions">
+              <button type="submit" class="save-btn" [disabled]="!editForm.title.trim()">
+                Save
+              </button>
+              <button type="button" class="cancel-btn" (click)="cancelEdit()">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
