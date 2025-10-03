@@ -1,6 +1,6 @@
 # Todo Application - Full Stack
 
-A complete todo management application with user authentication and authorization.
+A complete todo management application with user authentication roles and authorization.
 
 ## What is this?
 
